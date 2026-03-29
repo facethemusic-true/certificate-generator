@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>診斷證明書產生器</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 600px; border: 2px solid #333; padding: 10px; }
+        .quadrant { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; padding: 10px; border: 1px solid #ddd; }
+        button { padding: 5px; cursor: pointer; border: 1px solid #ccc; background: white; }
+        button.active { background: #ffcc00; font-weight: bold; }
+        .result-area { margin-top: 20px; border: 1px solid #007bff; padding: 15px; background: #f0f7ff; }
+        .copy-btn { margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🏥 診斷證明書快速產生器</h1>
+    
+    <p>1. 選擇日期：<input type="date" id="visitDate"></p>
+
+    <p>2. 點選牙位 (FDI)：</p>
+    <div class="grid">
+        <div class="quadrant" id="q1">
+            <button onclick="setTooth('18','右上第三大臼齒')">18</button>
+            <button onclick="setTooth('17','右上第二大臼齒')">17</button>
+            <button onclick="setTooth('16','右上第一大臼齒')">16</button>
+            <button onclick="setTooth('15','右上第二小臼齒')">15</button>
+            <button onclick="setTooth('14','右上第一小臼齒')">14</button>
+            <button onclick="setTooth('13','右上犬齒')">13</button>
+            <button onclick="setTooth('12','右上側門齒')">12</button>
+            <button onclick="setTooth('11','右上正中門齒')">11</button>
+        </div>
+        <div class="quadrant" id="q2">
+            <button onclick="setTooth('21','左上正中門齒')">21</button>
+            <button onclick="setTooth('22','左上側門齒')">22</button>
+            <button onclick="setTooth('23','左上犬齒')">23</button>
+            <button onclick="setTooth('24','左上第一小臼齒')">24</button>
+            <button onclick="setTooth('25','左上第二小臼齒')">25</button>
+            <button onclick="setTooth('26','左上第一大臼齒')">26</button>
+            <button onclick="setTooth('27','左上第二大臼齒')">27</button>
+            <button onclick="setTooth('28','左上第三大臼齒')">28</button>
+        </div>
+    </div>
+
+    <p>3. 選擇診斷：
+        <select id="diagnosis" onchange="updateText()">
+            <option value="">--請選擇--</option>
+            <option value="阻生齒">阻生齒</option>
+            <option value="異位萌發">異位萌發</option>
+            <option value="殘根">殘根</option>
+            <option value="嚴重齲齒">嚴重齲齒</option>
+            <option value="牙周病">牙周病</option>
+        </select>
+    </p>
+
+    <div class="result-area">
+        <strong>生成的文本：</strong><br>
+        <div id="finalText" style="white-space: pre-wrap; margin-top:10px;">請先完成上述選擇...</div>
+        <button class="copy-btn" onclick="copyToClipboard()">複製文字</button>
+    </div>
+
+    <script>
+        let selectedToothText = "";
+
+        function setTooth(id, name) {
+            selectedToothText = name;
+            // 簡單處理按鈕變色
+            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            updateText();
+        }
+
+        function updateText() {
+            const dateVal = document.getElementById('visitDate').value;
+            const diag = document.getElementById('diagnosis').value;
+            if (!selectedToothText || !diag || !dateVal) return;
+
+            // 轉換日期為民國格式 (範例)
+            const dateObj = new Date(dateVal);
+            const rocYear = dateObj.getFullYear() - 1911;
+            const month = dateObj.getMonth() + 1;
+            const day = dateObj.getDate();
+
+            const result = `診斷：${selectedToothText}${diag}\n內容：患者上述病因至本院求診。於民國${rocYear}年${month}月${day}日因局部麻醉下切開翻瓣進行手術處置。`;
+            document.getElementById('finalText').innerText = result;
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('finalText').innerText;
+            navigator.clipboard.writeText(text);
+            alert("已複製到剪貼簿！");
+        }
+    </script>
+</body>
+</html>
