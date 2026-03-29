@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>診斷證明書助手 - 完整材料版</title>
+    <title>診斷證明書助手 - 縫合邏輯修正版</title>
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; padding: 20px; background-color: #f4f7f6; line-height: 1.6; }
         .container { max-width: 1300px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -12,21 +12,16 @@
         .quadrant { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
         .tooth-btn { padding: 12px 0; font-size: 13px; cursor: pointer; border: 1px solid #ced4da; background: white; text-align: center; border-radius: 4px; }
         .tooth-btn.active { background: #007bff; color: white; border-color: #0056b3; }
-        
         .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #f1f3f5; align-items: flex-end; }
         .input-item { display: flex; flex-direction: column; }
         label { font-weight: bold; font-size: 13px; margin-bottom: 5px; color: #495057; }
         select, input { padding: 8px; border: 1px solid #ced4da; border-radius: 6px; font-size: 14px; }
-        
         .add-btn { padding: 10px 30px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .reset-btn { padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; }
-        
         table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
         th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #dee2e6; font-size: 14px; }
         td { padding: 8px; border-bottom: 1px solid #eee; }
-        
         .inline-select { width: 100%; padding: 5px; border: 1px solid #ddd; border-radius: 4px; background: #fffde7; }
-        
         .output-area { background: #fff; padding: 25px; border: 2px solid #007bff; border-radius: 8px; font-size: 17px; min-height: 120px; white-space: pre-wrap; margin-top: 20px; }
         .copy-btn { margin-top: 15px; padding: 12px 40px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .del-btn { background: #f8d7da; border: none; padding: 5px 10px; border-radius: 4px; color: #721c24; cursor: pointer; }
@@ -36,7 +31,7 @@
 
 <div class="container">
     <div class="header-flex">
-        <h2>🏥 診斷證明書產生器</h2>
+        <h2>🏥 診斷證明書產生器 (縫合邏輯更新)</h2>
         <button class="reset-btn" onclick="resetAll()">🧹 清除全部資料</button>
     </div>
 
@@ -50,20 +45,15 @@
         <div class="input-item"><label>手術日期</label><input type="date" id="opDate"></div>
         <div class="input-item"><label>診斷</label>
             <select id="diag">
-                <option value="阻生">阻生</option>
-                <option value="水平阻生">水平阻生</option>
-                <option value="異位萌發">異位萌發</option>
-                <option value="嚴重齲齒">嚴重齲齒</option>
-                <option value="嚴重牙周病">嚴重牙周病</option>
-                <option value="殘根">殘根</option>
+                <option value="阻生">阻生</option><option value="水平阻生">水平阻生</option>
+                <option value="異位萌發">異位萌發</option><option value="嚴重齲齒">嚴重齲齒</option>
+                <option value="嚴重牙周病">嚴重牙周病</option><option value="殘根">殘根</option>
             </select>
         </div>
         <div class="input-item"><label>手術方式</label>
             <select id="opType">
-                <option value="簡單拔牙">簡單拔牙</option>
-                <option value="複雜拔牙">複雜拔牙</option>
-                <option value="單純齒切除術">單純齒切除術</option>
-                <option value="複雜齒切除術">複雜齒切除術</option>
+                <option value="簡單拔牙">簡單拔牙</option><option value="複雜拔牙">複雜拔牙</option>
+                <option value="單純齒切除術">單純齒切除術</option><option value="複雜齒切除術">複雜齒切除術</option>
                 <option value="手術拔除深度阻生齒">手術拔除深度阻生齒</option>
             </select>
         </div>
@@ -81,9 +71,9 @@
     <table id="recordTable">
         <thead>
             <tr>
-                <th width="10%">日期</th><th width="8%">牙位</th>
-                <th width="18%">診斷</th><th width="22%">手術名稱</th>
-                <th width="18%">置入材料</th><th width="14%">拆線日期</th><th width="8%">操作</th>
+                <th width="10%">日期</th><th width="8%">牙位</th><th width="18%">診斷</th>
+                <th width="22%">手術名稱</th><th width="18%">置入材料</th>
+                <th width="14%">拆線日期</th><th width="8%">操作</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -156,33 +146,27 @@
         tbody.innerHTML = records.map((r, i) => `
             <tr>
                 <td>${r.date}</td><td><b>${r.fdi}</b></td>
-                <td>
-                    <select class="inline-select" onchange="updateRecord(${i}, 'diag', this.value)">
-                        <option value="阻生" ${r.diag==='阻生'?'selected':''}>阻生</option>
-                        <option value="水平阻生" ${r.diag==='水平阻生'?'selected':''}>水平阻生</option>
-                        <option value="異位萌發" ${r.diag==='異位萌發'?'selected':''}>異位萌發</option>
-                        <option value="嚴重齲齒" ${r.diag==='嚴重齲齒'?'selected':''}>嚴重齲齒</option>
-                        <option value="嚴重牙周病" ${r.diag==='嚴重牙周病'?'selected':''}>嚴重牙周病</option>
-                        <option value="殘根" ${r.diag==='殘根'?'selected':''}>殘根</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="inline-select" onchange="updateRecord(${i}, 'opName', this.value)">
-                        <option value="簡單拔牙" ${r.opName==='簡單拔牙'?'selected':''}>簡單拔牙</option>
-                        <option value="複雜拔牙" ${r.opName==='複雜拔牙'?'selected':''}>複雜拔牙</option>
-                        <option value="單純齒切除術" ${r.opName==='單純齒切除術'?'selected':''}>單純齒切除術</option>
-                        <option value="複雜齒切除術" ${r.opName==='複雜齒切除術'?'selected':''}>複雜齒切除術</option>
-                        <option value="手術拔除深度阻生齒" ${r.opName==='手術拔除深度阻生齒'?'selected':''}>手術拔除深度阻生齒</option>
-                    </select>
-                </td>
-                <td>
-                    <select class="inline-select" onchange="updateRecord(${i}, 'mat', this.value)">
-                        <option value="" ${r.mat===''?'selected':''}>無</option>
-                        <option value="，術後置入膠原蛋白" ${r.mat.includes('膠原蛋白')?'selected':''}>膠原蛋白</option>
-                        <option value="，術後置入再生膜及骨粉" ${r.mat.includes('再生膜')?'selected':''}>再生膜及骨粉</option>
-                        <option value="，術後置入牙釉基質蛋白及骨粉" ${r.mat.includes('牙釉基質')?'selected':''}>牙釉基質蛋白及骨粉</option>
-                    </select>
-                </td>
+                <td><select class="inline-select" onchange="updateRecord(${i}, 'diag', this.value)">
+                    <option value="阻生" ${r.diag==='阻生'?'selected':''}>阻生</option>
+                    <option value="水平阻生" ${r.diag==='水平阻生'?'selected':''}>水平阻生</option>
+                    <option value="異位萌發" ${r.diag==='異位萌發'?'selected':''}>異位萌發</option>
+                    <option value="嚴重齲齒" ${r.diag==='嚴重齲齒'?'selected':''}>嚴重齲齒</option>
+                    <option value="嚴重牙周病" ${r.diag==='嚴重牙周病'?'selected':''}>嚴重牙周病</option>
+                    <option value="殘根" ${r.diag==='殘根'?'selected':''}>殘根</option>
+                </select></td>
+                <td><select class="inline-select" onchange="updateRecord(${i}, 'opName', this.value)">
+                    <option value="簡單拔牙" ${r.opName==='簡單拔牙'?'selected':''}>簡單拔牙</option>
+                    <option value="複雜拔牙" ${r.opName==='複雜拔牙'?'selected':''}>複雜拔牙</option>
+                    <option value="單純齒切除術" ${r.opName==='單純齒切除術'?'selected':''}>單純齒切除術</option>
+                    <option value="複雜齒切除術" ${r.opName==='複雜齒切除術'?'selected':''}>複雜齒切除術</option>
+                    <option value="手術拔除深度阻生齒" ${r.opName==='手術拔除深度阻生齒'?'selected':''}>手術拔除深度阻生齒</option>
+                </select></td>
+                <td><select class="inline-select" onchange="updateRecord(${i}, 'mat', this.value)">
+                    <option value="" ${r.mat===''?'selected':''}>無</option>
+                    <option value="，術後置入膠原蛋白" ${r.mat.includes('膠原蛋白')?'selected':''}>膠原蛋白</option>
+                    <option value="，術後置入再生膜及骨粉" ${r.mat.includes('再生膜')?'selected':''}>再生膜及骨粉</option>
+                    <option value="，術後置入牙釉基質蛋白及骨粉" ${r.mat.includes('牙釉基質')?'selected':''}>牙釉基質蛋白及骨粉</option>
+                </select></td>
                 <td><input type="date" value="${r.stitch}" onchange="updateRecord(${i}, 'stitch', this.value)" style="width:125px; font-size:12px"></td>
                 <td><button class="del-btn" onclick="records.splice(${i},1);render()">刪除</button></td>
             </tr>
@@ -220,12 +204,18 @@
                 const ops = Array.from(new Set(groupItems.map(gi => gi.opName))).join('及');
                 const teeth = formatTeethNames(groupItems.map(gi => gi.fdi));
                 
-                let matSuffix = groupItems[0].mat;
-                if (matSuffix && sKey !== "no_stitch") {
-                    matSuffix += "並縫合";
+                // --- 關鍵 Bug 修正邏輯 ---
+                let matAndSuture = groupItems[0].mat;
+                if (sKey !== "no_stitch") {
+                    // 如果有拆線日期
+                    if (matAndSuture) {
+                        matAndSuture += "並縫合"; // 有材料：置入材料並縫合
+                    } else {
+                        matAndSuture = "並縫合";  // 無材料：並縫合
+                    }
                 }
 
-                contentText += `${dateStr}${action}${teeth}之${ops}${matSuffix}`;
+                contentText += `${dateStr}${action}${teeth}之${ops}${matAndSuture}`;
                 
                 if (sKey !== "no_stitch") {
                     const sd = new Date(sKey);
@@ -239,7 +229,6 @@
         contentText += "囑患者術後宜適當休息，避免劇烈運動，並注意口腔衛生預防感染，需定期回診追蹤檢查。";
         document.getElementById('finalOutput').innerText = diagLine + "\n\n" + contentText;
     }
-
     function resetAll() { if (confirm("確定清除所有紀錄？")) { records = []; render(); } }
     function copyText() { navigator.clipboard.writeText(document.getElementById('finalOutput').innerText); alert("診斷內容已複製！"); }
     window.onload = init;
