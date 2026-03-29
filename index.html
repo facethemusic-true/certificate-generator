@@ -2,94 +2,195 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>診斷證明書產生器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牙科診斷證明助手</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 600px; border: 2px solid #333; padding: 10px; }
-        .quadrant { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; padding: 10px; border: 1px solid #ddd; }
-        button { padding: 5px; cursor: pointer; border: 1px solid #ccc; background: white; }
-        button.active { background: #ffcc00; font-weight: bold; }
-        .result-area { margin-top: 20px; border: 1px solid #007bff; padding: 15px; background: #f0f7ff; }
-        .copy-btn { margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        body { font-family: "Microsoft JhengHei", sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        
+        /* 牙位圖布局 */
+        .tooth-chart { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; background: #eee; padding: 10px; border-radius: 5px; }
+        .quadrant { display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px; }
+        .tooth-btn { padding: 8px 2px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; background: white; border-radius: 3px; }
+        .tooth-btn:hover { background: #e0f7fa; }
+        .tooth-btn.active { background: #007bff; color: white; border-color: #0056b3; }
+
+        /* 輸入區域 */
+        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: flex-end; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #fafafa; }
+        .input-item { display: flex; flex-direction: column; }
+        select, input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .add-btn { padding: 8px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; height: 38px; }
+
+        /* 紀錄清單 */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
+        
+        /* 文本輸出 */
+        .output-area { background: #e9ecef; padding: 20px; border-radius: 5px; white-space: pre-wrap; line-height: 1.8; border-left: 5px solid #007bff; }
+        .copy-btn { margin-top: 10px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h1>🏥 診斷證明書快速產生器</h1>
-    
-    <p>1. 選擇日期：<input type="date" id="visitDate"></p>
 
-    <p>2. 點選牙位 (FDI)：</p>
-    <div class="grid">
-        <div class="quadrant" id="q1">
-            <button onclick="setTooth('18','右上第三大臼齒')">18</button>
-            <button onclick="setTooth('17','右上第二大臼齒')">17</button>
-            <button onclick="setTooth('16','右上第一大臼齒')">16</button>
-            <button onclick="setTooth('15','右上第二小臼齒')">15</button>
-            <button onclick="setTooth('14','右上第一小臼齒')">14</button>
-            <button onclick="setTooth('13','右上犬齒')">13</button>
-            <button onclick="setTooth('12','右上側門齒')">12</button>
-            <button onclick="setTooth('11','右上正中門齒')">11</button>
+<div class="container">
+    <h2>🦷 牙科診斷證明快速產生器</h2>
+
+    <p><strong>1. 點選牙位：</strong></p>
+    <div class="tooth-chart">
+        <div class="quadrant" id="Q1"></div><div class="quadrant" id="Q2"></div><div class="quadrant" id="Q4"></div><div class="quadrant" id="Q3"></div></div>
+
+    <div class="input-group">
+        <div class="input-item">
+            <label>已選牙位</label>
+            <input type="text" id="selectedTooth" readonly placeholder="點擊上方牙位">
         </div>
-        <div class="quadrant" id="q2">
-            <button onclick="setTooth('21','左上正中門齒')">21</button>
-            <button onclick="setTooth('22','左上側門齒')">22</button>
-            <button onclick="setTooth('23','左上犬齒')">23</button>
-            <button onclick="setTooth('24','左上第一小臼齒')">24</button>
-            <button onclick="setTooth('25','左上第二小臼齒')">25</button>
-            <button onclick="setTooth('26','左上第一大臼齒')">26</button>
-            <button onclick="setTooth('27','左上第二大臼齒')">27</button>
-            <button onclick="setTooth('28','左上第三大臼齒')">28</button>
+        <div class="input-item">
+            <label>手術日期</label>
+            <input type="date" id="opDate">
         </div>
+        <div class="input-item">
+            <label>診斷</label>
+            <select id="diag">
+                <option value="水平阻生">水平阻生</option>
+                <option value="異位萌發">異位萌發</option>
+                <option value="齲齒">齲齒</option>
+                <option value="嚴重牙周病">嚴重牙周病</option>
+                <option value="殘根">殘根</option>
+            </select>
+        </div>
+        <div class="input-item">
+            <label>手術方式</label>
+            <select id="opType">
+                <option value="92013簡單拔牙">92013 簡單拔牙</option>
+                <option value="92014複雜拔牙">92014 複雜拔牙</option>
+                <option value="92015單純齒切除術">92015 單純齒切除術</option>
+                <option value="92016複雜齒切除術">92016 複雜齒切除術</option>
+                <option value="92063手術拔除深度阻生齒">92063 手術拔除深度阻生齒</option>
+            </select>
+        </div>
+        <button class="add-btn" onclick="addRecord()">＋加入紀錄</button>
     </div>
 
-    <p>3. 選擇診斷：
-        <select id="diagnosis" onchange="updateText()">
-            <option value="">--請選擇--</option>
-            <option value="阻生齒">阻生齒</option>
-            <option value="異位萌發">異位萌發</option>
-            <option value="殘根">殘根</option>
-            <option value="嚴重齲齒">嚴重齲齒</option>
-            <option value="牙周病">牙周病</option>
-        </select>
-    </p>
+    <table id="recordTable">
+        <thead>
+            <tr>
+                <th>日期</th><th>牙位</th><th>診斷</th><th>手術方式</th><th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-    <div class="result-area">
-        <strong>生成的文本：</strong><br>
-        <div id="finalText" style="white-space: pre-wrap; margin-top:10px;">請先完成上述選擇...</div>
-        <button class="copy-btn" onclick="copyToClipboard()">複製文字</button>
-    </div>
+    <div class="output-area" id="finalOutput">尚未新增任何紀錄...</div>
+    <button class="copy-btn" onclick="copyText()">複製全文</button>
+</div>
 
-    <script>
-        let selectedToothText = "";
+<script>
+    let records = [];
 
-        function setTooth(id, name) {
-            selectedToothText = name;
-            // 簡單處理按鈕變色
-            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            updateText();
+    // 初始化牙位圖
+    const quadrants = {
+        Q1: [18,17,16,15,14,13,12,11],
+        Q2: [21,22,23,24,25,26,27,28],
+        Q4: [48,47,46,45,44,43,42,41],
+        Q3: [31,32,33,34,35,36,37,38]
+    };
+
+    for (let q in quadrants) {
+        const container = document.getElementById(q);
+        quadrants[q].forEach(t => {
+            const btn = document.createElement('button');
+            btn.className = 'tooth-btn';
+            btn.innerText = t;
+            btn.onclick = () => {
+                document.querySelectorAll('.tooth-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('selectedTooth').value = t;
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    // 民國日期格式化
+    function formatROC(dateStr) {
+        const d = new Date(dateStr);
+        return `民國 ${d.getFullYear() - 1911} 年 ${d.getMonth() + 1} 月 ${d.getDate()} 日`;
+    }
+
+    // 加入紀錄
+    function addRecord() {
+        const tooth = document.getElementById('selectedTooth').value;
+        const date = document.getElementById('opDate').value;
+        const diag = document.getElementById('diag').value;
+        const op = document.getElementById('opType').value;
+
+        if (!tooth || !date) { alert("請選擇牙位與日期"); return; }
+
+        records.push({ tooth, date, diag, op });
+        renderTable();
+        generateFinalText();
+    }
+
+    // 渲染表格
+    function renderTable() {
+        const tbody = document.querySelector('#recordTable tbody');
+        tbody.innerHTML = '';
+        records.forEach((r, index) => {
+            tbody.innerHTML += `<tr>
+                <td>${r.date}</td><td>${r.tooth}</td><td>${r.diag}</td><td>${r.op}</td>
+                <td><button onclick="deleteRecord(${index})">刪除</button></td>
+            </tr>`;
+        });
+    }
+
+    function deleteRecord(index) {
+        records.splice(index, 1);
+        renderTable();
+        generateFinalText();
+    }
+
+    // 核心邏輯：生成文本
+    function generateFinalText() {
+        if (records.length === 0) {
+            document.getElementById('finalOutput').innerText = "尚未新增任何紀錄...";
+            return;
         }
 
-        function updateText() {
-            const dateVal = document.getElementById('visitDate').value;
-            const diag = document.getElementById('diagnosis').value;
-            if (!selectedToothText || !diag || !dateVal) return;
+        // 1. 先按日期分組
+        const grouped = {};
+        records.forEach(r => {
+            if (!grouped[r.date]) grouped[r.date] = [];
+            grouped[r.date].push(r);
+        });
 
-            // 轉換日期為民國格式 (範例)
-            const dateObj = new Date(dateVal);
-            const rocYear = dateObj.getFullYear() - 1911;
-            const month = dateObj.getMonth() + 1;
-            const day = dateObj.getDate();
+        let fullText = "";
+        
+        // 2. 生成診斷行 (列出所有牙位與診斷)
+        let diagLine = "診斷：";
+        records.forEach((r, i) => {
+            diagLine += `${r.tooth}${r.diag}${i === records.length - 1 ? "" : "、"}`;
+        });
+        fullText += diagLine + "\n\n";
 
-            const result = `診斷：${selectedToothText}${diag}\n內容：患者上述病因至本院求診。於民國${rocYear}年${month}月${day}日因局部麻醉下切開翻瓣進行手術處置。`;
-            document.getElementById('finalText').innerText = result;
+        // 3. 生成內容行 (按日期合併)
+        fullText += "內容：\n";
+        for (let date in grouped) {
+            const items = grouped[date];
+            const teeth = items.map(i => i.tooth).join("、");
+            const ops = items.map(i => i.op).join("、");
+            
+            fullText += `患者因上述病因於 ${formatROC(date)} 至本院求診，於局部麻醉下進行 ${teeth} 之 ${ops} 手術處置。\n`;
         }
+        
+        fullText += "囑患者術後宜適當休息，避免劇烈運動，並注意口腔衛生預防感染，需定期回診追蹤檢查。";
+        document.getElementById('finalOutput').innerText = fullText;
+    }
 
-        function copyToClipboard() {
-            const text = document.getElementById('finalText').innerText;
-            navigator.clipboard.writeText(text);
-            alert("已複製到剪貼簿！");
-        }
-    </script>
+    function copyText() {
+        const text = document.getElementById('finalOutput').innerText;
+        navigator.clipboard.writeText(text);
+        alert("診斷書內容已複製！");
+    }
+</script>
+
 </body>
 </html>
