@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>診斷證明書助手 - 縫合邏輯修正版</title>
+    <title>診斷證明書助手 - 格式規範版</title>
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; padding: 20px; background-color: #f4f7f6; line-height: 1.6; }
         .container { max-width: 1300px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -31,7 +31,7 @@
 
 <div class="container">
     <div class="header-flex">
-        <h2>🏥 診斷證明書產生器 (縫合邏輯更新)</h2>
+        <h2>🏥 診斷證明書產生器 (標準格式)</h2>
         <button class="reset-btn" onclick="resetAll()">🧹 清除全部資料</button>
     </div>
 
@@ -41,7 +41,7 @@
     </div>
 
     <div class="input-group">
-        <div class="input-item"><label>牙位</label><input type="text" id="dispFDI" readonly placeholder="點選上方牙位"><input type="hidden" id="fdiValue"></div>
+        <div class="input-item"><label>牙位</label><input type="text" id="dispFDI" readonly><input type="hidden" id="fdiValue"></div>
         <div class="input-item"><label>手術日期</label><input type="date" id="opDate"></div>
         <div class="input-item"><label>診斷</label>
             <select id="diag">
@@ -179,7 +179,9 @@
             if (!diagGroup[r.diag]) diagGroup[r.diag] = [];
             if (!diagGroup[r.diag].includes(r.fdi)) diagGroup[r.diag].push(r.fdi);
         });
-        let diagLine = "診斷：" + Object.keys(diagGroup).map(d => `${formatTeethNames(diagGroup[d])}${d}`).join('，');
+        
+        // 加入（以下空白）
+        let diagLine = "診斷：" + Object.keys(diagGroup).map(d => ${formatTeethNames(diagGroup[d])}${d}).join('，') + "（以下空白）";
 
         let contentText = "內容：患者因上述病因至本院求診。";
         const dateGroup = {};
@@ -188,7 +190,7 @@
         Object.keys(dateGroup).sort().forEach(date => {
             const items = dateGroup[date];
             const d = new Date(date);
-            const dateStr = `於民國 ${d.getFullYear()-1911} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日`;
+            const dateStr = 於民國 ${d.getFullYear()-1911} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日;
             
             const stitchGroups = {};
             items.forEach(item => {
@@ -204,29 +206,25 @@
                 const ops = Array.from(new Set(groupItems.map(gi => gi.opName))).join('及');
                 const teeth = formatTeethNames(groupItems.map(gi => gi.fdi));
                 
-                // --- 關鍵 Bug 修正邏輯 ---
                 let matAndSuture = groupItems[0].mat;
                 if (sKey !== "no_stitch") {
-                    // 如果有拆線日期
-                    if (matAndSuture) {
-                        matAndSuture += "並縫合"; // 有材料：置入材料並縫合
-                    } else {
-                        matAndSuture = "並縫合";  // 無材料：並縫合
-                    }
+                    if (matAndSuture) { matAndSuture += "並縫合"; } 
+                    else { matAndSuture = "並縫合"; }
                 }
 
-                contentText += `${dateStr}${action}${teeth}之${ops}${matAndSuture}`;
+                contentText += ${dateStr}${action}${teeth}之${ops}${matAndSuture};
                 
                 if (sKey !== "no_stitch") {
                     const sd = new Date(sKey);
-                    contentText += `，於民國 ${sd.getFullYear()-1911} 年 ${sd.getMonth()+1} 月 ${sd.getDate()} 日回診拆線。`;
+                    contentText += ，於民國 ${sd.getFullYear()-1911} 年 ${sd.getMonth()+1} 月 ${sd.getDate()} 日回診拆線。;
                 } else {
                     contentText += "。";
                 }
             });
         });
 
-        contentText += "囑患者術後宜適當休息，避免劇烈運動，並注意口腔衛生預防感染，需定期回診追蹤檢查。";
+        // 加入（以下空白）
+        contentText += "囑患者術後宜適當休息，避免劇烈運動，並注意口腔衛生預防感染，需定期回診追蹤檢查。（以下空白）";
         document.getElementById('finalOutput').innerText = diagLine + "\n\n" + contentText;
     }
     function resetAll() { if (confirm("確定清除所有紀錄？")) { records = []; render(); } }
