@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>診斷證明書助手 - 格式規範版</title>
+    <title>診斷證明書助手 - 標準格式修正版</title>
     <style>
         body { font-family: "Microsoft JhengHei", sans-serif; padding: 20px; background-color: #f4f7f6; line-height: 1.6; }
         .container { max-width: 1300px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -11,6 +11,7 @@
         .tooth-chart { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; background: #f8f9fa; padding: 20px; border: 2px solid #dee2e6; }
         .quadrant { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; }
         .tooth-btn { padding: 12px 0; font-size: 13px; cursor: pointer; border: 1px solid #ced4da; background: white; text-align: center; border-radius: 4px; }
+        .tooth-btn:hover { background: #e9ecef; }
         .tooth-btn.active { background: #007bff; color: white; border-color: #0056b3; }
         .input-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #f1f3f5; align-items: flex-end; }
         .input-item { display: flex; flex-direction: column; }
@@ -39,7 +40,6 @@
         <div class="quadrant" id="Q1"></div><div class="quadrant" id="Q2"></div>
         <div class="quadrant" id="Q4"></div><div class="quadrant" id="Q3"></div>
     </div>
-
     <div class="input-group">
         <div class="input-item"><label>牙位</label><input type="text" id="dispFDI" readonly><input type="hidden" id="fdiValue"></div>
         <div class="input-item"><label>手術日期</label><input type="date" id="opDate"></div>
@@ -180,7 +180,6 @@
             if (!diagGroup[r.diag].includes(r.fdi)) diagGroup[r.diag].push(r.fdi);
         });
         
-        // 加入（以下空白）
         let diagLine = "診斷：" + Object.keys(diagGroup).map(d => ${formatTeethNames(diagGroup[d])}${d}).join('，') + "（以下空白）";
 
         let contentText = "內容：患者因上述病因至本院求診。";
@@ -223,7 +222,6 @@
             });
         });
 
-        // 加入（以下空白）
         contentText += "囑患者術後宜適當休息，避免劇烈運動，並注意口腔衛生預防感染，需定期回診追蹤檢查。（以下空白）";
         document.getElementById('finalOutput').innerText = diagLine + "\n\n" + contentText;
     }
